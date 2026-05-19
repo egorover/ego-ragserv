@@ -1,6 +1,22 @@
 """
 Configuration module for RAG Vector Demo project.
 Loads environment variables and provides centralized settings.
+
+Environment Variables:
+    OPENAI_API_KEY: OpenAI API key for embedding generation
+    EMBEDDING_MODEL: OpenAI embedding model (default: text-embedding-3-large)
+    EMBEDDING_DIMENSION: Dimension of embedding vectors (default: 3072)
+    PINECONE_API_KEY: Pinecone API key
+    PINECONE_ENVIRONMENT: Pinecone environment/region
+    PINECONE_INDEX_NAME: Pinecone index name
+    WEAVIATE_URL: Weaviate instance URL
+    WEAVIATE_API_KEY: Weaviate API key (optional for local)
+    RELEVANCE_PROJECT: Relevance AI project ID
+    RELEVANCE_API_KEY: Relevance AI API key
+    RELEVANCE_DATASET_ID: Relevance AI dataset ID
+    PROXYAPI_API_KEY: ProxyAPI API key (optional)
+    PROXYAPI_BASE_URL: ProxyAPI base URL (optional)
+    PROXYAPI_ENABLED: Enable ProxyAPI routing (default: false)
 """
 
 import os
@@ -34,6 +50,11 @@ class Settings:
     RELEVANCE_API_KEY: str = os.getenv("RELEVANCE_API_KEY", "")
     RELEVANCE_DATASET_ID: str = os.getenv("RELEVANCE_DATASET_ID", "rag-demo-dataset")
     
+    # ProxyAPI Configuration
+    PROXYAPI_API_KEY: str = os.getenv("PROXYAPI_API_KEY", "")
+    PROXYAPI_BASE_URL: str = os.getenv("PROXYAPI_BASE_URL", "")
+    PROXYAPI_ENABLED: bool = os.getenv("PROXYAPI_ENABLED", "false").lower() == "true"
+    
     @classmethod
     def validate(cls) -> bool:
         """
@@ -50,6 +71,11 @@ class Settings:
             "RELEVANCE_PROJECT": cls.RELEVANCE_PROJECT,
             "RELEVANCE_API_KEY": cls.RELEVANCE_API_KEY,
         }
+        
+        # ProxyAPI is optional, only validate if enabled
+        if cls.PROXYAPI_ENABLED and not cls.PROXYAPI_API_KEY:
+            print("⚠️  ProxyAPI is enabled but PROXYAPI_API_KEY is not set")
+            return False
         
         missing_fields = [
             field for field, value in required_fields.items() 
@@ -75,6 +101,9 @@ class Settings:
         print(f"Weaviate Class: {cls.WEAVIATE_CLASS_NAME}")
         print(f"Relevance Project: {cls.RELEVANCE_PROJECT}")
         print(f"Relevance Dataset: {cls.RELEVANCE_DATASET_ID}")
+        print(f"ProxyAPI Enabled: {cls.PROXYAPI_ENABLED}")
+        if cls.PROXYAPI_ENABLED:
+            print(f"ProxyAPI Base URL: {cls.PROXYAPI_BASE_URL or '(default)'}")
         print("=" * 60)
 
 

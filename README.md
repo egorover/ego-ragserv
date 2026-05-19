@@ -115,6 +115,12 @@ RELEVANCE_PROJECT=your_relevance_project_id_here
 RELEVANCE_API_KEY=your_relevance_api_key_here
 RELEVANCE_DATASET_ID=rag-demo-dataset
 
+# ProxyAPI Configuration (Optional)
+# Enable to route OpenAI requests through ProxyAPI
+PROXYAPI_API_KEY=your_proxyapi_api_key_here
+PROXYAPI_BASE_URL=https://api.proxyapi.example.com/v1
+PROXYAPI_ENABLED=false
+
 # Embedding Configuration
 EMBEDDING_MODEL=text-embedding-3-large
 EMBEDDING_DIMENSION=3072
@@ -156,6 +162,19 @@ URL: `http://localhost:8080`, API key оставить пустым
 4. Создайте API Key: Settings → API Keys → Create New
 
 **Подробная инструкция**: См. [SETUP_GUIDE_RU.md](SETUP_GUIDE_RU.md#3-relevance-ai)
+
+#### ProxyAPI (Опционально)
+ProxyAPI позволяет маршрутизировать запросы к OpenAI через прокси-сервис.
+
+1. Получите API ключ у вашего провайдера ProxyAPI
+2. Укажите `PROXYAPI_BASE_URL` (эндпоинт прокси-сервиса)
+3. Установите `PROXYAPI_ENABLED=true`
+
+**Применение**: Полезна для:
+- Обхода ограничений доступа к OpenAI
+- Централизованного управления API ключами
+- Мониторинга и аналитики запросов
+- Кэширования эмбеддингов
 
 ## 🚀 Запуск
 
@@ -214,17 +233,20 @@ retriever.compare_stores(
 ```python
 from embeddings.embedder import Embedder
 
+# Стандартное использование (прямой доступ к OpenAI)
 embedder = Embedder()
+
+# Использование с ProxyAPI
+embedder = Embedder(use_proxyapi=True)
+
+# Или с явными параметрами
+embedder = Embedder(
+    api_key="your_api_key",
+    base_url="https://api.proxyapi.example.com/v1"
+)
 
 # Одиночный текст
 embedding = embedder.embed_text("Hello world")
-
-# Пакетная обработка
-embeddings = embedder.embed_batch([
-    "Text 1",
-    "Text 2",
-    "Text 3"
-])
 ```
 
 ### Text Chunker

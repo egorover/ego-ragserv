@@ -17,7 +17,9 @@ class Embedder:
     def __init__(
         self,
         model: str = None,
-        api_key: str = None
+        api_key: str = None,
+        base_url: str = None,
+        use_proxyapi: bool = None
     ):
         """
         Initialize the Embedder with OpenAI client.
@@ -25,15 +27,33 @@ class Embedder:
         Args:
             model: OpenAI embedding model to use (defaults to settings)
             api_key: OpenAI API key (defaults to settings)
+            base_url: Custom base URL for API (e.g., ProxyAPI endpoint)
+            use_proxyapi: If True, use ProxyAPI configuration from settings
         """
         self.model = model or settings.EMBEDDING_MODEL
-        self.api_key = api_key or settings.OPENAI_API_KEY
         
-        if not self.api_key:
-            raise ValueError("OpenAI API key is required. Set OPENAI_API_KEY in .env file.")
+        # Determine API key and base URL
+        if use_proxyapi or (use_proxyapi is None and settings.PROXYAPI_ENABLED):
+            # Use ProxyAPI configuration
+            self.api_key = api_key or settings.PROXYAPI_API_KEY
+            self.base_url = base_url or settings.PROXYAPI_BASE_URL
+            if not self.api_key:
+                raise ValueError("ProxyAPI is enabled but PROXYAPI_API_KEY is not set")
+            logger.info(f"Initialized Embedder with ProxyAPI: {self.model}")
+        else:
+            # Use direct OpenAI configuration
+            self.api_key = api_key or settings.OPENAI_API_KEY
+            self.base_url = base_url  # OPENAI_BASE_URL не используется по умолчанию
+            if not self.api_key:
+                raise ValueError("OpenAI API key is required. Set OPENAI_API_KEY in .env file.")
+            logger.info(f"Initialized Embedder with OpenAI: {self.model}")
         
-        self.client = OpenAI(api_key=self.api_key)
-        logger.info(f"Initialized Embedder with model: {self.model}")
+        # Initialize OpenAI client with optional custom base URL
+        client_kwargs = {"api_key": self.api_key}
+        if self.base_url:
+            client_kwargs["base_url"] = self.base_url
+        
+        self.client = OpenAI(**client_kwargs)
     
     def embed_text(self, text: str) -> List[float]:
         """
