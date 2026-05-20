@@ -15,8 +15,9 @@ ProxyAPI позволяет маршрутизировать запросы к O
 
 ```env
 # ProxyAPI Configuration
+# ВАЖНО: Замените example.com на реальный URL вашего прокси-провайдера
 PROXYAPI_API_KEY=your_proxyapi_api_key_here
-PROXYAPI_BASE_URL=https://api.proxyapi.example.com/v1
+PROXYAPI_BASE_URL=https://ваш-провайдер.com/v1
 PROXYAPI_ENABLED=true
 ```
 
@@ -24,8 +25,8 @@ PROXYAPI_ENABLED=true
 
 | Параметр | Описание | Обязательный |
 |----------|----------|--------------|
-| `PROXYAPI_API_KEY` | API ключ ProxyAPI | Да (если включён) |
-| `PROXYAPI_BASE_URL` | Базовый URL прокси-сервиса | Нет (используется по умолчанию) |
+| `PROXYAPI_API_KEY` | API ключ ProxyAPI (обычно начинается с `sk-`) | Да (если включён) |
+| `PROXYAPI_BASE_URL` | Базовый URL прокси-сервиса (должен заканчиваться на `/v1`) | Да |
 | `PROXYAPI_ENABLED` | Включить ProxyAPI (true/false) | Нет (по умолчанию: false) |
 
 ## 🚀 Использование
@@ -55,7 +56,7 @@ from embeddings.embedder import Embedder
 
 embedder = Embedder(
     api_key="your_proxyapi_key",
-    base_url="https://api.proxyapi.example.com/v1"
+    base_url="https://ваш-провайдер.com/v1"
 )
 ```
 
@@ -93,7 +94,8 @@ print(f"ProxyAPI API Key set: {bool(settings.PROXYAPI_API_KEY)}")
 
 ## 🔧 Примеры прокси-сервисов
 
-- **Lmarena API**: `https://api.lmarena.io/v1`
+- **ProxyAPI (Россия)**: `https://api.proxyapi.ru/openai/v1`
+- **Lmarena API**: `https://api.lmarena.ai/v1`
 - **Local OpenAI Proxy**: Запустите свой прокси-сервер
 - **Корпоративные прокси**: Уточните у вашего IT-отдела
 
